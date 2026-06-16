@@ -191,10 +191,51 @@ Final Score
 
 = (0.5 × 0.60)
 + (0.5 × 0.90)
-
 = 0.30 + 0.45
 
 = 0.75
 ```
 The final score is then used to determine whether the sentiment is Positive, Neutral, or Negative.
 
+
+### API Endpoint – Predict Sentiment
+This endpoint is used to analyze the sentiment of an employee's chat conversation. The system retrieves the chat message using the provided chat_code, performs sentiment analysis using both VADER and RoBERTa models, and stores the final sentiment result in the employee_sentiments table.
+
+Method
+POST
+
+Route
+/predict
+
+Request Body
+```
+{
+   "sender_id": "EMP001",
+   "chat_code": "CHAT001"
+}
+```
+ 
+**Description:**
+ When a request is sent to this endpoint, the system first locates the chat conversation associated with the provided chat_code. The retrieved chat content is then cleaned and preprocessed to remove unnecessary text such as URLs, special characters, and extra spaces.
+The processed text is analyzed using a hybrid sentiment analysis approach that combines VADER and RoBERTa. VADER evaluates sentiment based on words and phrases, while RoBERTa analyzes the overall context and meaning of the conversation. Both model outputs are combined to generate a final sentiment score.
+
+Based on the calculated score, the conversation is classified as:
+- Positive (1) – Indicates satisfaction, appreciation, or a positive attitude.
+- Neutral (0) – Indicates informational or emotionally balanced communication.
+- Negative (-1) – Indicates dissatisfaction, frustration, or a negative attitude.
+
+The final sentiment result is then saved to the employee_sentiments table along with the employee details, chat reference, sentiment score, and timestamp.
+
+Successful Response
+```
+{
+   "sentiment_id": "7a7f5f9f-c31c-4eb9-a60e-57c13f95e68d",
+   "company_id": "dcb3b939-d52d-40f1-95b4-f1a10dc1e8f5",
+   "employee_id": "101",
+   "chat_code": "CHAT001",
+   "score": 0.75,
+   "sentiment": 1,
+   "created_at": "2026-05-27T10:30:20.123456"
+}
+```
+This response confirms that the sentiment analysis was completed successfully and that the result has been stored in the database.
